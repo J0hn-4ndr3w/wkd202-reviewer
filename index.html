@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            text-decoration: none;
+            text-align: center;
+            background-color: #837F73;
+        }
+
+        h1 {
+            font-family: 'Poor Story', cursive;
+            background-color: #950002;
+            padding: 60px;
+            color: #FFAB0D;
+            text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+        }
+
+        h2 {
+            font-family: 'Poor Story', cursive;
+            font-size: 30px;
+            padding: 60px;
+            background-color: #950002;
+            color: #FFAB0D;
+            text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+        }
+
+        p {
+            font-family: 'Poor Story', cursive;
+            background-color: #FFAB0D;
+            font-size: 20px;
+            font-weight: bold;
+
+        }
+
+        a {
+            border: 1px solid #222F5B;
+            padding: 10px;
+            background-color: #222F5B;
+            color: silver;
+            border-radius: 5px;
+            margin-top: 50px;
+            display: inline-block;
+        }
+
+        a:hover {
+            border: 1px solid #000000;
+            background-color: #000000;
+            color: #FCBF2B;
+        }
+
+        .quiz li {
+            cursor: pointer;
+            border: 1px solid;
+            display: inline-block;
+            width: 200px;
+            margin: 10px;
+            font-family: 'Poor Story', cursive;
+            font-size: 26px;
+        }
+
+        #currentQuestion {
+            color: #000000;
+            font-size: 18px;
+            font-family: 'Poor Story', cursive;
+            margin-top: 10px;
+
+        }
+
+        #isCorrect {
+            color: white;
+            font-family: 'Poor Story', cursive;
+            font-weight: bold;
+            font-size: 18px;
+
+        }
+
+        .quiz,
+        .summary {
+            display: none;
+        }
+
+        .quiz ul {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .selected {
+            background-color: #398C3F;
+        }
+
+        .wrong {
+            background-color: red;
+        }
+    </style>
+    <script>
+        let score = 0;
+        let currentQuestion = 0;
+        let questions = [{
+            title: "What is rule 33 in Marine Collision Regulations?",
+            answers: ['Equipment for Sound signals', 'Manuvering and Warning signals', 'Sound signals', 'Restricted in Visibility'],
+            correct: 0
+        },
+        {
+            title: "In Rule 33 (a). A vessel of 12 metres or more in length shall be provided with a _____?",
+            answers: ['light', 'bell', 'whistle', 'horn'],
+            correct: 2
+        },
+        {
+            title: "In Rule 33 (a). a vessel of 20 metres or more in length shall be provided with a ______ in addition to a whistle",
+            answers: ['bell', 'blast', 'horn', 'gong'],
+            correct: 0
+        },
+        {
+            title: "The whistle, bell and gong shall comply with the specification in Annex ____ to these regulations.",
+            answers: ['Annex II', 'Annex IV', 'Annex III', 'Annex I'],
+            correct: 2
+        },
+        {
+            title: "In Rule 33 (a). A vessel of 100 metres or more in length shall, in addition, be provided with a ____, the tone and sound of which cannot be confused with that of the bell.",
+            answers: ['gong', 'bell', 'whistle', 'horn'],
+            correct: 0
+        },
+        {
+            title: "In Rule 33 (b). A vessel of less than 12 metres in length shall not be obliged to carry the _________ appliances prescribed in paragraph (a) of this Rule but if she does not, she shall be provided with some other means of making an efficient sound signal",
+            answers: ['whistle', 'sound signalling', 'chart', 'oil'],
+            correct: 1
+        },
+        {
+            title: "What is rule 34 in Marine Collision Regulations?",
+            answers: ['Equipment for Sound signals', 'Manuvering and Warning signals', 'Sound signals', 'Restricted in Visibility'],
+            correct: 1
+        },
+        {
+            title: "In Rule 34 (a). one short blast to mean",
+            answers: ['I am operating foreward propulsion', 'I am operating astern propulsion', 'I am altering my course to port', 'I am altering my course to starboard'],
+            correct: 3
+        },
+        {
+            title: "What is rule 35 in Marine Collision Regulations?",
+            answers: ['Equipment for Sound signals', 'Manuvering and Warning signals', 'Sound signals in Restricted in Visibility', 'Signals to attract attention'],
+            correct: 2
+        },
+        {
+            title: "In Rule 35 (a). A power-driven vessel making way through the water shall sound at intervals of not more than ______ one prolonged blast. ",
+            answers: ['2 minutes', '3 minutes', '1 minute', '5 seconds'],
+            correct: 0
+        },
+        {
+            title: "In Rule 35 (b). A power-driven vessel underway but stopped and making no way through the water shall sound at intervals of not more than 2 minutes two prolonged blasts in succession with an interval of about _______ between them. ",
+            answers: ['2 minutes', '3 minutes', '2 seconds', '5 seconds'],
+            correct: 2
+        },
+        {
+            title: "In Rule 35 (c). A vessel not under command, a vessel restricted in her ability to manoeuvre, a vessel constrained by her draught, a sailing vessel, a vessel engaged in fishing and a vessel engaged in towing or pushing another vessel shall, instead of the signals prescribed in paragraphs (a) or (b) of this Rule, sound at intervals of not more than _____________, namely one prolonged followed by two short blasts.",
+            answers: ['3 minutes three blasts in succession', '2 minutes three blasts in succession', '2 seconds three blasts in succession', '5 seconds three blasts in succession'],
+            correct: 1
+        },
+        {
+            title: "What is rule 36 in Marine Collision Regulations?",
+            answers: ['Equipment for Sound signals', 'Manuvering and Warning signals', 'Sound signals in Restricted in Visibility', 'Signals to attract attention'],
+            correct: 3
+        },
+        {
+            title: "In Rule 36, If necessary to attract the attention of another vessel any vessel may make light or sound signals that cannot be ________ for any signal authorized elsewhere in these Rules,  or may direct the beam of her searchlight in the direction of the danger, in such a way as not to embarrass any vessel.",
+            answers: ['mistaken', 'wrong', 'mistake', 'right'],
+            correct: 0
+        },
+        {
+            title: "What is rule 37 in Marine Collision Regulations?",
+            answers: ['Equipment for Sound signals', 'Distress signals', 'Sound signals in Restricted in Visibility', 'Signals to attract attention'],
+            correct: 1
+        },
+        ];
+
+
+
+        $(document).ready(function () {
+
+            $('.start a').click(function (e) {
+                e.preventDefault();
+                $('.start').hide();
+                $('.quiz').show();
+                showQuestion();
+            });
+
+            $('.quiz ul').on('click', 'li', function () {
+                $('.selected').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            $('.quiz a').click(function (e) {
+                e.preventDefault();
+                if ($('li.selected').length) {
+                    let guess = parseInt($('li.selected').attr('id'));
+                    let isCorrect = $('li.selected').attr('isCorrect');
+                    checkAnswer(guess, isCorrect);
+                } else {
+                    alert('Please select an answer');
+                }
+            });
+
+            $('.summary a').click(function (e) {
+                e.preventDefault();
+                restartQuiz();
+            });
+
+        });
+
+        function showQuestion() {
+            let question = questions[currentQuestion];
+            $('.quiz h2').text(question.title);
+            $('.quiz ul').html('');
+            for (var i = 0; i < question.answers.length; i++) {
+                $('.quiz ul').append(`<li isCorrect="true" id="${i}">${question.answers[i]}</li>`);
+            }
+            showProgress();
+        }
+
+        function showIncorrectQuestion(guess) {
+            let question = questions[currentQuestion];
+            $('.quiz h2').text(question.title);
+            $('.quiz ul').html('');
+            for (var i = 0; i < question.answers.length; i++) {
+                let cls = i === question.correct ? "selected" : guess === i ? "wrong" : ""
+                $('.quiz ul').append(`<li id="${i}" isCorrect="false" class="${cls}">${question.answers[i]}</li>`);
+            }
+            showProgress();
+        }
+
+        function checkAnswer(guess, isCorrect) {
+
+            let question = questions[currentQuestion];
+            if (question.correct === guess) {
+                if (isCorrect === 'true') {
+                    score++;
+                }
+                showIsCorrect(true);
+                currentQuestion++;
+                if (currentQuestion >= questions.length) {
+                    showSummary();
+                } else {
+                    showQuestion();
+                }
+            } else {
+                showIsCorrect(false);
+                showIncorrectQuestion(guess);
+            }
+
+
+        }
+
+        function showSummary() {
+            $('.quiz').hide();
+            $('.summary').show();
+            $('.summary p').text("Thank you for taking the quiz! Here's how you scored. You answered " + score + " out of " + questions.length + " correctly! Care to try again?")
+        }
+
+        function restartQuiz() {
+            $('.summary').hide();
+            $('.quiz').show();
+            score = 0;
+            currentQuestion = 0;
+            showQuestion();
+        }
+
+        function showProgress() {
+            $('#currentQuestion').html(currentQuestion + " out of " + questions.length);
+        }
+
+        function showIsCorrect(isCorrect) {
+            var result = "Wrong";
+            if (isCorrect) {
+                result = "Correct";
+            }
+            $('#isCorrect').html(result);
+        }
+    </script>
+
+
+
+    <link href="https://fonts.googleapis.com/css?family=Poor+Story" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Andrew WKD202 Reviewer</title>
+</head>
+
+<body>
+
+
+    <div class="start">
+        <h1>How Well Do You Know Marine Collision Regulations?</h1>
+        <a href="#">Start Quiz</a>
+    </div>
+
+
+    <div class="quiz">
+        <h2>Question Title</h2>
+        <ul>
+            <li>Choice</li>
+            <li>Choice</li>
+            <li>Choice</li>
+            <li>Choice</li>
+        </ul>
+        <a href="#">Submit Answer</a>
+        <div id="currentQuestion"></div>
+        <div id="isCorrect"></div>
+    </div>
+
+
+    <div class="summary">
+        <h2>Results</h2>
+        <p>Thank you for taking the quiz! Here's how you scored. You answered x out of y correctly! Care to try again?</p>
+        <a href="#">Retake Quiz</a>
+    </div>
+
+
+
+
+</body>
+
+</html>
